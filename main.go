@@ -4,27 +4,35 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/docker/docker/reference"
+	"github.com/docker/docker/registry"
 )
 
 func main() {
 
-	app := cli.NewApp()
-	app.Name = "tf2"
-	app.Usage = "Explore a Docker registry"
+	// hard-coded POC - list tags for "debian"
 
-	app.Commands = []cli.Command{
-		{
-			Name:  "tags",
-			Usage: "list tags for a repository",
-			Action: func(c *cli.Context) error {
-				ref := c.Args().First()
-				fmt.Println("get tags for", ref)
-				return nil
-			},
-		},
+	repositoryName := "debian"
+
+	registryService := registry.NewService(registry.ServiceOptions{})
+
+	repositoryRef, err := reference.ParseNamed(repositoryName)
+	if err != nil {
+		abort(2, err)
 	}
 
-	app.Run(os.Args)
+	repositoryInfo, err := registryService.ResolveRepository(repositoryRef)
+	if err != nil {
+		abort(2, err)
+	}
 
+	fmt.Println(repositoryInfo.Named)
+
+	// repository, confirmedV2, err = distribution.NewV2Repository(context.Foreground(), repoInfo, registryServvice.A, http.Header{}, authConfig, "pull")
+
+}
+
+func abort(status int, message interface{}) {
+	fmt.Fprintf(os.Stderr, "ERROR: %s", message)
+	os.Exit(status)
 }
