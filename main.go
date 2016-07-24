@@ -44,6 +44,27 @@ func main() {
 
 	fmt.Println(status, token)
 
+	repositoryInfo, err := registryService.ResolveRepository(repositoryRef)
+	if err != nil {
+		abort(3, err)
+	}
+
+	fmt.Println(repositoryInfo)
+
+	endpoints, err := registryService.LookupPullEndpoints(repositoryRef.Hostname())
+	if err != nil {
+		abort(4, err)
+	}
+
+	fmt.Println(endpoints[0])
+
+	// repositoryService, _, err := distribution.NewV2Repository(context.TODO(), repositoryInfo, endpoints[0], http.Header{}, authConfig, "pull")
+	// if err != nil {
+	// 	abort(4, err)
+	// }
+	//
+	// fmt.Println(repositoryService)
+
 	//
 	// authConfig := registry.ResolveAuthConfig(cliConfig.AuthConfigs, repositoryInfo.Index)
 	//
